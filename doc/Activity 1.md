@@ -1,7 +1,7 @@
 
 # Recommendation systems with Deep neural network
 
-### **2019/3/23 성남-KAIST AI 집중 강좌**
+### **2019/3/22 성남-KAIST 인공지능 집중교육과정**
 
 ***Tip> shotcuts for Jupyter Notebook***
 * Shift + Enter : run cell and select below
@@ -17,12 +17,12 @@ $$
 L(M, \hat{M})=\sum_{(i,j)\in E}(M_{ij}-\hat{M}_{ij})^2 + \lambda\sum_{i=1}^{3}\lVert W_i\rVert^2_2
 $$
 
-<br/>
-
 - #### Update weight and bias
+
   $$
   \underset{W, b}{\text{argmin}}\hspace{0.2em} L(M, \hat{M})
   $$
+
 
 
 
@@ -133,8 +133,6 @@ rating.head(10)
     </tr>
   </tbody>
 </table>
-</div>
-
 
 
 ### Ratings statistics
@@ -201,8 +199,6 @@ rating.set_index(["userId", "timestamp","rating"]).count(level="rating").rename(
     </tr>
   </tbody>
 </table>
-</div>
-
 
 
 Count the number of users and movies and check the sparsity
@@ -219,8 +215,10 @@ print("[*] Sparsity: %.2f%%" % (n_rating / (n_user * n_movie) * 100))
     [*] 610 users & 9724 movies
     [*] Sparsity: 1.70%
 
+</br>
 
 ### Movie list
+
 See the movie list including movies' title and genres.
 
 
@@ -303,8 +301,6 @@ movielist.head(10)
     </tr>
   </tbody>
 </table>
-</div>
-
 
 
 Drop **"timestamp"** which looks useless.
@@ -359,8 +355,6 @@ rating.tail()
     </tr>
   </tbody>
 </table>
-</div>
-
 
 
 Scale **"movieId"** in between 0 and 9741, **"userId"** in between 0 and 609
@@ -416,8 +410,6 @@ rating.tail()
     </tr>
   </tbody>
 </table>
-</div>
-
 
 
 ### Item-based autoencoder
@@ -473,8 +465,6 @@ rating.head()
     </tr>
   </tbody>
 </table>
-</div>
-
 
 
 ### Split the ratings for training and test
@@ -506,8 +496,9 @@ We use "tf.sparse_tensor_dense_matmul()" function instead of  "tf.layers.dense( 
 ```python
 def autoencoder(_X, _units, _l2_lambda, _n_ratings):
     w_init = w_init = tf.contrib.layers.variance_scaling_initializer()
-    b_init = tf.constant_initializer()
+    b_init = tf.constant_initializer(0.)
     
+    ## Encoder
     '1st Hidden layer'
     w1 = tf.get_variable('weight1', [d2, _units[0]], initializer=w_init)
     b1 = tf.get_variable('biases1', [_units[0]], initializer=b_init)
@@ -520,7 +511,9 @@ def autoencoder(_X, _units, _l2_lambda, _n_ratings):
     h2 = tf.matmul(h1, w2) + b2
     h2 = tf.nn.sigmoid(h2)
     
+    ## Decoder
     w3 = tf.get_variable('weight3', [_units[1], d2], initializer=w_init)
+    
     yhat = tf.matmul(h2, w3)
     out = tf.gather_nd(yhat, _X.indices)
 
@@ -633,7 +626,7 @@ plt.show()
 
 ![png](output_32_0.png)
 
-<div style="page-break-after: always;"></div>
+</br>
 
 ## 4. Test
 
@@ -655,9 +648,8 @@ print("[*] RMSE Train %.4e" % RMSE_Train)
     [*] RMSE Test: 9.3325e-01
     [*] RMSE Train 8.9563e-01
 
-<div style="page-break-after: always;"></div>
 
-## Report
+## Report</br>
 
 ### 1. Momentum Optimizer
 Use the "MomentumOptimizer( )" instaed of the GradientDescentOptimizer and compare the RMSE learning curves of the two optimizers. When you use MomentumOptimizer, set the momuentum at 0.9 and adjust the learning rate.
@@ -665,11 +657,3 @@ Use the "MomentumOptimizer( )" instaed of the GradientDescentOptimizer and compa
 ### 2. Batch normalization
 Apply "batch normalization" to the 1st and 2nd hidden layers, and compare the resulting RMSE learning curves with those obtained above.<br/>
 *Hint)* tf.layers.batch_normalization( )
-
-### Submission
-Write a report on Activities 1 and 2, and send it to <a href="mailto:kaiser5072@kaist.ac.kr">kaiser5072@kaist.ac.kr</a>
-
-
-```python
-
-```
